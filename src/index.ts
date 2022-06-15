@@ -21,9 +21,12 @@ class Heater implements IObserver{
 
 class TemperatureSensor implements IObservable{
     public subscribers:IObserver[] = [];
-    public val:number = 24;
+    public val:number | null = null;
 
     notifyAll(): void {
+        if(this.val === null){
+            return;
+        }
         for (const subscriber of this.subscribers) {
             subscriber.notifyChange(this.val);
         }
@@ -31,6 +34,10 @@ class TemperatureSensor implements IObservable{
 
     subscribe(iObserver: IObserver): void {
         this.subscribers.push(iObserver);
+        if(this.val === null){
+            return;
+        }
+        iObserver.notifyChange(this.val);
     }
 
     setTemperature(val:number):void{
@@ -46,6 +53,7 @@ let heater = new Heater();
 let temperatureSensor = new TemperatureSensor();
 
 temperatureSensor.subscribe(ac);
+temperatureSensor.setTemperature(16);
 temperatureSensor.subscribe(heater);
 
-temperatureSensor.setTemperature(16);
+
