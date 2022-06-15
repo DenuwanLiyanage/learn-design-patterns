@@ -1,59 +1,64 @@
-interface IObservable {
-    subscribe(iObserver:IObserver):void;
-    notifyAll():void;
-}
-interface IObserver {
-    notifyChange(val:number):void;
+interface ICommand {
+    execute(input: string): string;
 }
 
-class Ac implements IObserver{
+class Append implements ICommand {
 
-    notifyChange(val: number): void {
-        console.log(`notifying change for Ac, value ${val}`);
+    public constructor(public appendText: string) {
+    }
+
+    execute(input: string): string {
+        return input + this.appendText;
     }
 }
 
-class Heater implements IObserver{
-    notifyChange(val: number): void {
-        console.log(`notifying change for Heater, value ${val}`);
+class Backspace implements ICommand {
+
+    public constructor(public val: number = 1) {
+    }
+
+    execute(input: string): string {
+        return input.slice(0, input.length - this.val);
     }
 }
 
-class TemperatureSensor implements IObservable{
-    public subscribers:IObserver[] = [];
-    public val:number | null = null;
+class Clear implements ICommand {
 
-    notifyAll(): void {
-        if(this.val === null){
-            return;
-        }
-        for (const subscriber of this.subscribers) {
-            subscriber.notifyChange(this.val);
-        }
+    public constructor() {
     }
 
-    subscribe(iObserver: IObserver): void {
-        this.subscribers.push(iObserver);
-        if(this.val === null){
-            return;
-        }
-        iObserver.notifyChange(this.val);
-    }
-
-    setTemperature(val:number):void{
-        this.val = val;
-        this.notifyAll();
-
+    execute(input: string): string {
+        return "";
     }
 }
 
-let ac = new Ac();
-let heater = new Heater();
+class TextEditor {
+    private currentText: string = "";
 
-let temperatureSensor = new TemperatureSensor();
+    public executeCommand(iCommand: ICommand) {
+        this.currentText = iCommand.execute(this.currentText);
+    }
 
-temperatureSensor.subscribe(ac);
-temperatureSensor.setTemperature(16);
-temperatureSensor.subscribe(heater);
+    public display(): void {
+        console.log(this.currentText);
+    }
+}
+
+
+let textEditor = new TextEditor();
+
+let append = new Append("hell");
+textEditor.executeCommand(append);
+textEditor.display();
+
+let backSpace = new Backspace(2);
+textEditor.executeCommand(backSpace);
+textEditor.display();
+
+let clear = new Clear();
+textEditor.executeCommand(clear);
+textEditor.display();
+
+
 
 
