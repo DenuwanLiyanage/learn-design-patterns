@@ -1,43 +1,51 @@
-interface IUsbDevice {
-    receiveDataAsAndroid(data: string): void;
+interface IObservable {
+    subscribe(iObserver:IObserver):void;
+    notifyAll():void;
+}
+interface IObserver {
+    notifyChange(val:number):void;
 }
 
-class IPhone {
-    receiveDataAsIos(data: string): void {
-        console.log(`Receive ${data} as ios Apple`)
-    }
-}
+class Ac implements IObserver{
 
-class Galaxy implements IUsbDevice {
-    receiveDataAsAndroid(data: string): void {
-        console.log(`Receive ${data} as Android Galaxy`)
-    }
-}
-
-class LightningToUsbAdapter implements IUsbDevice {
-
-    public constructor(public apple: IPhone) {
-    }
-
-    receiveDataAsAndroid(data: string): void {
-        this.apple.receiveDataAsIos(data.toUpperCase());
+    notifyChange(val: number): void {
+        console.log(`notifying change for Ac, value ${val}`);
     }
 }
 
-class Computer {
-    public constructor() {
-    }
-
-    public copyToDevice(usb: IUsbDevice): void {
-        usb.receiveDataAsAndroid("saman")
+class Heater implements IObserver{
+    notifyChange(val: number): void {
+        console.log(`notifying change for Heater, value ${val}`);
     }
 }
 
-let galaxy = new Galaxy();
-let apple = new IPhone();
-let adapter = new LightningToUsbAdapter(apple)
+class TemperatureSensor implements IObservable{
+    public subscribers:IObserver[] = [];
+    public val:number = 24;
 
-let computer = new Computer();
+    notifyAll(): void {
+        for (const subscriber of this.subscribers) {
+            subscriber.notifyChange(this.val);
+        }
+    }
 
-computer.copyToDevice(galaxy);
-computer.copyToDevice(adapter);
+    subscribe(iObserver: IObserver): void {
+        this.subscribers.push(iObserver);
+    }
+
+    setTemperature(val:number):void{
+        this.val = val;
+        this.notifyAll();
+
+    }
+}
+
+let ac = new Ac();
+let heater = new Heater();
+
+let temperatureSensor = new TemperatureSensor();
+
+temperatureSensor.subscribe(ac);
+temperatureSensor.subscribe(heater);
+
+temperatureSensor.setTemperature(16);
