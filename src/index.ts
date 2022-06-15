@@ -1,63 +1,71 @@
-enum CakeType {
-    ChocolateCake,
-    VanillaCake,
-    FruitCake
-}
-
-class Order {
-    public constructor(
-        public orderNum: number,
-        public cakeType: CakeType,
-        public customer: string,
-    ) {
+class Tv{
+    public turnOn():void{
+        console.log("Tv on");
     }
-
-    public toString():string{
-        return `Order number is ${this.orderNum}, cake type is ${this.cakeType}, customer is ${this.customer}`;
+    public turnOff():void{
+        console.log("Tv off");
+    }
+    public changeChannel():void{
+        console.log("Change tv channel");
     }
 }
 
-abstract class CakeBase {
-    public constructor(public order: Order, public weight: number) {
+class DvdPlayer{
+    public turnOn():void{
+        console.log("Dvd player on");
     }
-
-    public toString(): string {
-        return `Cake made for order ${this.order}`;
+    public turnOff():void{
+        console.log("Dvd player off");
     }
-
-}
-
-class ChocolateCake extends CakeBase {
-}
-
-class VanillaCake extends CakeBase {
-}
-
-class FruitCake extends CakeBase {
-}
-
-class CakeFactory {
-    public constructor(public readonly gramsPerCake: number) {
-    }
-
-    public bakeCake(order: Order): CakeBase {
-        switch (order.cakeType) {
-            case CakeType.ChocolateCake:
-                return new ChocolateCake(order, this.gramsPerCake);
-            case CakeType.VanillaCake:
-                return new VanillaCake(order, this.gramsPerCake);
-            case CakeType.FruitCake:
-                return new FruitCake(order, this.gramsPerCake);
-        }
+    public ejectTray():void{
+        console.log("DVD player eject tray");
     }
 }
 
-let factory = new CakeFactory(150);
-let order = new Order(1, CakeType.ChocolateCake, "Sunimal");
-let cake =factory.bakeCake(order);
-console.log(cake.toString());
+class AirCondition{
+    private temp:number = 27;
+    public turnOn():void{
+        console.log("Air condition on");
+    }
+    public turnOff():void{
+        console.log("Air condition off");
+    }
+    public setTemperature(temp:number):void{
+        this.temp = temp;
+        console.log(`Air condition set temperature to ${temp}`);
+    }
+}
 
+class HomeAppliance{
+    public constructor(public tv:Tv, public dvd:DvdPlayer, public ac:AirCondition) {
+    }
 
+    public setupForMovie():void{
+        console.log("Movie setup");
+        this.tv.turnOn();
+        this.dvd.turnOn();
+        this.ac.turnOn();
+        this.ac.setTemperature(25);
+    }
+    public setupForSleep():void{
+        console.log("Sleep setup");
+        this.tv.turnOff();
+        this.dvd.turnOff();
+        this.ac.setTemperature(20);
+    }
+    public setupForLeave():void{
+        console.log("Leave setup");
+        this.tv.turnOff();
+        this.dvd.turnOff();
+        this.ac.turnOff();
+    }
+}
 
+let tv = new Tv();
+let dvd = new DvdPlayer();
+let ac = new AirCondition();
+let homeAppliance = new HomeAppliance(tv, dvd, ac);
 
-
+homeAppliance.setupForMovie();
+homeAppliance.setupForSleep();
+homeAppliance.setupForLeave();
